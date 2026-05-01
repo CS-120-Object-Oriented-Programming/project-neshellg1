@@ -83,7 +83,7 @@ public class Command {
 	 * @return true if the command has a second word.
 	 */
 	public boolean hasSecondWord() {
-		return restOfLine != null;
+		return restOfLine != null && restOfLine.size() > 0;
 	}
 
 	/**

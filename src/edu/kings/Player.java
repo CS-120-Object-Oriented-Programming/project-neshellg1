@@ -11,6 +11,8 @@ public class Player {
 
     /** The room the player is currently in. */
     private Room currentRoom;
+    /** The player's current score. */
+    private int score;
 
     /**
      * Constructor that initializes the player with a starting room.
@@ -19,6 +21,7 @@ public class Player {
      */
     public Player(Room startingRoom) {
         this.currentRoom = startingRoom;
+        this.score = 0;
     }
 
     /**
@@ -29,6 +32,14 @@ public class Player {
     public Room getCurrentRoom() {
         return currentRoom;
     }
+    /**
+     * Accessor (getter) - Returns the player's current score.
+     *
+     * @return the current score
+     */
+    public int getScore() {
+        return score;
+    }
 
     /**
      * Mutator (setter) - Updates the room the player is currently in.
@@ -37,5 +48,13 @@ public class Player {
      */
     public void setCurrentRoom(Room newRoom) {
         this.currentRoom = newRoom;
+    }
+    /**
+     * Mutator (setter) - Adds points to the player's score.
+     *
+     * @param points the number of points to add
+     */
+    public void addScore(int points) {
+        this.score += points;
     }
 }
