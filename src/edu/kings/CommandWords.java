@@ -14,13 +14,22 @@ package edu.kings;
 
 public class CommandWords {
 	/** A constant array that holds all valid command words. */
-	private static String[] validCommands;
+	private static CommandEnum[] validCommands;
 
 	/**
 	 * Static block to initialize the fields of CommandWords.
 	 */
 	static {
-		String[] tempCommands = {"go", "quit", "help" };
+		CommandEnum[] tempCommands = {
+				CommandEnum.GO, 
+				CommandEnum.QUIT, 
+				CommandEnum.HELP,
+				CommandEnum.LOOK,
+	            CommandEnum.SCORE,
+	            CommandEnum.TURNS,
+	            CommandEnum.BACK,
+	            CommandEnum.STATUS
+	        };
 		validCommands = tempCommands;
 	}
 
@@ -34,7 +43,7 @@ public class CommandWords {
 		boolean valid = false;
 		int index = 0;
 		while (!valid && index < validCommands.length) {
-			if (validCommands[index].equals(aString)) {
+			if (validCommands[index].getText().equals(aString)) {
 				valid = true;
 			}
 			index++;
@@ -42,4 +51,15 @@ public class CommandWords {
 		// if we get here, the string was not found in the commands
 		return valid;
 	}
+	public static CommandEnum getCommand(String theString) {
+        CommandEnum result = null;
+        int index = 0;
+        while (result == null && index < validCommands.length) {
+            if (validCommands[index].getText().equals(theString)) {
+                result = validCommands[index];
+            }
+            index++;
+        }
+        return result;
+    }
 }

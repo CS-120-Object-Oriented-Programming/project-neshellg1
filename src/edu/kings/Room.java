@@ -1,4 +1,6 @@
 package edu.kings;
+import java.util.HashMap;
+
 /**
  * Class Room - a room in an adventure game.
  *
@@ -21,16 +23,10 @@ public class Room {
 	private String name;
 	/** The description of this room. */
 	private String description;
+	/** The exits of this room, mapping direction strings to Doors. */
+    private HashMap<String, Door> exits;
 
-	/** This room's north exit, null if none exits. */
-	public Door northExit;
-	/** This room's south exit, null if none exits. */
-	public Door southExit;
-	/** This room's east exit, null if none exits. */
-	public Door eastExit;
-	/** This room's west exit, null if none exits. */
-	public Door westExit;
-
+	
 	/**
 	 * Static initializer.
 	 */
@@ -48,6 +44,7 @@ public class Room {
 	public Room(String name, String description) {
 		this.name = name;
 		this.description = description;
+		exits = new HashMap<>();
 		counter++;
 	}
 
@@ -76,4 +73,38 @@ public class Room {
 	public static int getCounter() {
 		return counter;
 	}
+	/**
+     * Defines an exit from this room.
+     *
+     * @param direction The direction of the exit.
+     * @param neighbor  The door in the given direction.
+     */
+    public void setExit(String direction, Door neighbor) {
+        exits.put(direction, neighbor);
+    }
+
+    /**
+     * Gets a door in a specified direction if it exists.
+     *
+     * @param direction The direction to check.
+     * @return The door in the specified direction or null if it does not exist.
+     */
+    public Door getExit(String direction) {
+        return exits.get(direction);
+    }
+    /**
+     * Returns a string description including all the details of a Room.
+     *
+     * @return A string representing all the details of a Room.
+     */
+    public String toString() {
+        String result = name + ":\n";
+        result += "  " + description + "\n";
+        result += "  Exits:";
+        for (String direction : exits.keySet()) {
+            result += " " + direction;
+        }
+        return result;
+    }
+	
 }
