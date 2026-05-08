@@ -24,6 +24,7 @@ public class World {
 	public World() {
 		rooms = new HashMap<String, Room>();
 		createRooms();
+		createItems();
 	}
 
 	/**
@@ -57,51 +58,13 @@ public class World {
 	 *
 	 * @param from
 	 *            The room where the door originates.
-	 * @param north
+	 * @param n
 	 *            The room to the north of the originating room.
 	 */
-	private void createNorthDoor(Room from, Room north) {
-		Door northDoor = new Door(north);
-		from.northExit = northDoor;
-	}
-
-	/**
-	 * Helper method for creating doors between rooms.
-	 *
-	 * @param from
-	 *            The room where the door originates.
-	 * @param east
-	 *            The room to the east of the originating room.
-	 */
-	private void createEastDoor(Room from, Room east) {
-		Door eastDoor = new Door(east);
-		from.eastExit = eastDoor;
-	}
-
-	/**
-	 * Helper method for creating doors between rooms.
-	 *
-	 * @param from
-	 *            The room where the door originates.
-	 * @param south
-	 *            The room to the south of the originating room.
-	 */
-	private void createSouthDoor(Room from, Room south) {
-		Door southDoor = new Door(south);
-		from.southExit = southDoor;
-	}
-
-	/**
-	 * Helper method for creating doors between rooms.
-	 *
-	 * @param from
-	 *            The room where the door originates.
-	 * @param west
-	 *            The room to the west of the originating room.
-	 */
-	private void createWestDoor(Room from, Room west) {
-		Door westDoor = new Door(west);
-		from.westExit = westDoor;
+	private Door createDoor(Room from, String direction, Room to) {
+	    Door door = new Door(to);
+	    from.setExit(direction, door);
+	    return door;
 	}
 
 	/**
@@ -110,50 +73,125 @@ public class World {
 	 */
 	private void createRooms() {
 		// Creating all the rooms.
-		Room outside = new Room("Outside", "outside in the center of the King's College campus.");
-		Room holyCross = new Room("Holy Cross", "at one of two main dormitories on campus.");
-		Room essef = new Room("Essef", "at the other main dormitory on campus.");
-		Room campusCenter = new Room("Campus Center", "in the center of student activities on campus.");
-		Room admin = new Room("Admin", "in the oldest building on campus and home to the computer science department.");
-		Room slivaOffice = new Room("Sliva's Office", "in Dr Sliva's office.");
-		Room janoskiOffice = new Room("Janoski's Office", "in Dr Janoski's office.");
-		Room lab = new Room("Computer Lab", "in the Computer Science and Math computing lab.");
-		Room classroom = new Room("Classroom", "in the classroom where the computer science classes are taught.");
+		Room entrance = new Room("Maze Entrance",
+	            "You wake up at the entrance of a dark maze. The air is cold and damp. Paths lead north and east.");
+		Room northCorridor = new Room("North Corridor",
+	            "A long dark corridor stretches before you. You can hear dripping water.");
+	    Room eastCorridor = new Room("East Corridor",
+	            "A narrow passage. Something glints on the ground — it's a flashlight!");
+	    Room centralChamber = new Room("Central Chamber",
+	            "A large open chamber. Tunnels branch off in every direction. This must be the heart of the maze.");
+	    Room trapRoom = new Room("Trap Room",
+	            "You step on a loose stone — a trap! You lose your footing but recover. Dead end.");
+	    Room northDeadEnd = new Room("North Dead End",
+	            "A dead end. But wait — you spot a heavy chest against the wall!");
+	    Room westPassage = new Room("West Passage",
+	            "A dusty passage heading west. Cobwebs brush your face.");
+	    Room hiddenAlcove = new Room("Hidden Alcove",
+	            "A hidden alcove off the west passage. There's a map here — it shows the maze layout!");
+	    Room southTunnel = new Room("South Tunnel",
+	            "A downward sloping tunnel. It smells like mud. Another trap waits here.");
+	    Room deepChamber = new Room("Deep Chamber",
+	            "The deepest part of the maze. A compass and rope sit in the corner. You're close to the exit.");
+	    Room exitTunnel = new Room("Exit Tunnel",
+	            "You can see faint light ahead! Your friends are calling your name. The exit is near!");
 
 		// Adding all the rooms to the world.
-		this.addRoom(outside);
-		this.addRoom(holyCross);
-		this.addRoom(essef);
-		this.addRoom(campusCenter);
-		this.addRoom(admin);
-		this.addRoom(slivaOffice);
-		this.addRoom(janoskiOffice);
-		this.addRoom(lab);
-		this.addRoom(classroom);
+        addRoom(entrance);
+        addRoom(northCorridor);
+        addRoom(eastCorridor);
+        addRoom(centralChamber);
+        addRoom(trapRoom);
+        addRoom(northDeadEnd);
+        addRoom(westPassage);
+        addRoom(hiddenAlcove);
+        addRoom(southTunnel);
+        addRoom(deepChamber);
+        addRoom(exitTunnel);
 
-		// Creating all the doors between the rooms.
-		this.createSouthDoor(essef, outside);
-		this.createNorthDoor(outside, essef);
+     // From entrance
+        createDoor(entrance, "north", northCorridor);
+        createDoor(entrance, "east", eastCorridor);
 
-		this.createEastDoor(campusCenter, outside);
-		this.createWestDoor(outside, campusCenter);
+        // North corridor connects to central chamber and a dead end
+        createDoor(northCorridor, "south", entrance);
+        createDoor(northCorridor, "east", centralChamber);
+        createDoor(northCorridor, "north", northDeadEnd);
 
-		this.createEastDoor(outside, holyCross);
-		this.createWestDoor(holyCross, outside);
+     // East corridor (flashlight) connects back and to central chamber
+        createDoor(eastCorridor, "west", entrance);
+        createDoor(eastCorridor, "north", centralChamber);
 
-		this.createSouthDoor(outside, admin);
-		this.createNorthDoor(admin, outside);
 
-		this.createEastDoor(admin, lab);
-		this.createWestDoor(lab, admin);
+        // Central chamber — hub of the maze
+        createDoor(centralChamber, "west", northCorridor);
+        createDoor(centralChamber, "south", eastCorridor);
+        createDoor(centralChamber, "east", trapRoom);
+        createDoor(centralChamber, "north", westPassage);
+        createDoor(centralChamber, "down", southTunnel);
 
-		this.createSouthDoor(admin, janoskiOffice);
-		this.createNorthDoor(janoskiOffice, admin);
+     // Trap room — dead end
+        createDoor(trapRoom, "west", centralChamber);
 
-		this.createWestDoor(admin, slivaOffice);
-		this.createEastDoor(slivaOffice, admin);
+        // North dead end (backpack) — dead end
+        createDoor(northDeadEnd, "south", northCorridor);
 
-		this.createSouthDoor(lab, classroom);
-		this.createNorthDoor(classroom, lab);
+        // West passage to hidden alcove (map)
+        createDoor(westPassage, "south", centralChamber);
+        createDoor(westPassage, "west", hiddenAlcove);
+
+        // Hidden alcove — dead end
+        createDoor(hiddenAlcove, "east", westPassage);
+
+        // South tunnel (trap) to deep chamber
+        createDoor(southTunnel, "up", centralChamber);
+        Door lockedDoor = createDoor(southTunnel, "south", deepChamber);
+        lockedDoor.setRequiredKey("rusty key");
+
+        // Deep chamber (compass + rope) to exit
+        createDoor(deepChamber, "north", southTunnel);
+        createDoor(deepChamber, "east", exitTunnel);
+
+     // Exit tunnel — win condition
+        createDoor(exitTunnel, "west", deepChamber);
 	}
+	
+	
+	 /**
+     * Creates all items and places them in the appropriate rooms.
+     * Includes a container (chest) in the hidden alcove.
+     */
+    private void createItems() {
+        // Maze Entrance
+        getRoom("maze entrance").addItem(
+            new Item("stone", "A loose stone from the maze floor.", 0, 1.0));
+ 
+        // East Corridor — flashlight
+        getRoom("east corridor").addItem(
+            new Item("flashlight", "A working flashlight. It lights your way through the dark maze.", 10, 2.0));
+ 
+        // North Dead End — rusty key inside a chest (container)
+        Container chest = new Container("chest",
+            "A heavy wooden chest. It looks like it might contain something useful.", 5, 8.0);
+        chest.addItem(new Item("rusty key",
+            "An old rusty key. It might unlock something in the maze.", 10, 0.2));
+        getRoom("north dead end").addItem(chest);
+ 
+        // Hidden Alcove — map
+        getRoom("hidden alcove").addItem(
+            new Item("map", "A detailed map of the maze showing all the paths.", 20, 0.5));
+ 
+        // South Tunnel — the backpack (container) holding a torch
+        Container backpack = new Container("backpack",
+            "A sturdy backpack. Useful for carrying items.", 15, 3.0);
+        backpack.addItem(new Item("torch",
+            "A lit torch. Gives off warm light in the dark tunnel.", 5, 1.0));
+        getRoom("south tunnel").addItem(backpack);
+ 
+        // Deep Chamber — compass and rope
+        getRoom("deep chamber").addItem(
+            new Item("compass", "A compass to help navigate out of the maze.", 15, 0.5));
+        getRoom("deep chamber").addItem(
+            new Item("rope", "A strong rope. Could be useful for climbing.", 10, 3.0));
+    }        
 }
