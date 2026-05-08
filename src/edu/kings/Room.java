@@ -25,7 +25,8 @@ public class Room {
 	private String description;
 	/** The exits of this room, mapping direction strings to Doors. */
     private HashMap<String, Door> exits;
-
+ // already imported — add this field:
+    private HashMap<String, Item> items;
 	
 	/**
 	 * Static initializer.
@@ -33,6 +34,7 @@ public class Room {
 	static {
 		counter = 0;
 	}
+	
 	/**
 	 * Create a room described "description". Initially, it has no exits.
 	 * "description" is something like "a kitchen" or "an open court yard".
@@ -45,6 +47,7 @@ public class Room {
 		this.name = name;
 		this.description = description;
 		exits = new HashMap<>();
+		items = new HashMap<>();
 		counter++;
 	}
 
@@ -73,6 +76,9 @@ public class Room {
 	public static int getCounter() {
 		return counter;
 	}
+	
+	
+	
 	/**
      * Defines an exit from this room.
      *
@@ -92,6 +98,36 @@ public class Room {
     public Door getExit(String direction) {
         return exits.get(direction);
     }
+    
+    /**
+     * Adds an item to this room.
+     *
+     * @param item The item to add.
+     */
+    public void addItem(Item item) {
+        items.put(item.getName().toLowerCase(), item);
+    }
+    
+    /**
+     * Gets an item from this room by name.
+     *
+     * @param name The name of the item to find.
+     * @return The item, or null if no item with that name exists.
+     */
+    public Item getItem(String name) {
+        return items.get(name.toLowerCase());
+    }
+    
+    /**
+     * Removes an item from this room by name.
+     *
+     * @param name The name of the item to remove.
+     * @return The removed item, or null if no item with that name exists.
+     */
+    public Item removeItem(String name) {
+        return items.remove(name.toLowerCase());
+    }
+    
     /**
      * Returns a string description including all the details of a Room.
      *
@@ -103,6 +139,12 @@ public class Room {
         result += "  Exits:";
         for (String direction : exits.keySet()) {
             result += " " + direction;
+        }
+        if (!items.isEmpty()) {
+            result += "\n  Items:";
+            for (String itemName : items.keySet()) {
+                result += " " + itemName;
+            }
         }
         return result;
     }

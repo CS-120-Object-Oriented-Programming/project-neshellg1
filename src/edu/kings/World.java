@@ -24,6 +24,7 @@ public class World {
 	public World() {
 		rooms = new HashMap<String, Room>();
 		createRooms();
+		createItems();
 	}
 
 	/**
@@ -57,12 +58,13 @@ public class World {
 	 *
 	 * @param from
 	 *            The room where the door originates.
-	 * @param north
+	 * @param n
 	 *            The room to the north of the originating room.
 	 */
-	private void createDoor(Room from, String direction, Room to) {
-		Door door = new Door(to);
-		from.setExit (direction, door);
+	private Door createDoor(Room from, String direction, Room to) {
+	    Door door = new Door(to);
+	    from.setExit(direction, door);
+	    return door;
 	}
 
 	/**
@@ -82,7 +84,7 @@ public class World {
 	    Room trapRoom = new Room("Trap Room",
 	            "You step on a loose stone — a trap! You lose your footing but recover. Dead end.");
 	    Room northDeadEnd = new Room("North Dead End",
-	            "A dead end. But wait — you spot a backpack against the wall!");
+	            "A dead end. But wait — you spot a heavy chest against the wall!");
 	    Room westPassage = new Room("West Passage",
 	            "A dusty passage heading west. Cobwebs brush your face.");
 	    Room hiddenAlcove = new Room("Hidden Alcove",
@@ -143,7 +145,8 @@ public class World {
 
         // South tunnel (trap) to deep chamber
         createDoor(southTunnel, "up", centralChamber);
-        createDoor(southTunnel, "south", deepChamber);
+        Door lockedDoor = createDoor(southTunnel, "south", deepChamber);
+        lockedDoor.setRequiredKey("rusty key");
 
         // Deep chamber (compass + rope) to exit
         createDoor(deepChamber, "north", southTunnel);
@@ -152,4 +155,43 @@ public class World {
      // Exit tunnel — win condition
         createDoor(exitTunnel, "west", deepChamber);
 	}
+	
+	
+	 /**
+     * Creates all items and places them in the appropriate rooms.
+     * Includes a container (chest) in the hidden alcove.
+     */
+    private void createItems() {
+        // Maze Entrance
+        getRoom("maze entrance").addItem(
+            new Item("stone", "A loose stone from the maze floor.", 0, 1.0));
+ 
+        // East Corridor — flashlight
+        getRoom("east corridor").addItem(
+            new Item("flashlight", "A working flashlight. It lights your way through the dark maze.", 10, 2.0));
+ 
+        // North Dead End — rusty key inside a chest (container)
+        Container chest = new Container("chest",
+            "A heavy wooden chest. It looks like it might contain something useful.", 5, 8.0);
+        chest.addItem(new Item("rusty key",
+            "An old rusty key. It might unlock something in the maze.", 10, 0.2));
+        getRoom("north dead end").addItem(chest);
+ 
+        // Hidden Alcove — map
+        getRoom("hidden alcove").addItem(
+            new Item("map", "A detailed map of the maze showing all the paths.", 20, 0.5));
+ 
+        // South Tunnel — the backpack (container) holding a torch
+        Container backpack = new Container("backpack",
+            "A sturdy backpack. Useful for carrying items.", 15, 3.0);
+        backpack.addItem(new Item("torch",
+            "A lit torch. Gives off warm light in the dark tunnel.", 5, 1.0));
+        getRoom("south tunnel").addItem(backpack);
+ 
+        // Deep Chamber — compass and rope
+        getRoom("deep chamber").addItem(
+            new Item("compass", "A compass to help navigate out of the maze.", 15, 0.5));
+        getRoom("deep chamber").addItem(
+            new Item("rope", "A strong rope. Could be useful for climbing.", 10, 3.0));
+    }        
 }
