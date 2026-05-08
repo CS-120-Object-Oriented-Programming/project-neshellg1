@@ -1,0 +1,100 @@
+
+Welcome to The Maze of Fred!
+Fred is lost in a dark maze. Help him find his gear and escape!
+Type 'help' if you need help.
+
+Maze Entrance:
+  You wake up at the entrance of a dark maze. The air is cold and damp. Paths lead north and east.
+  Exits: east north
+  Items: stone
+> go north
+North Corridor:
+  A long dark corridor stretches before you. You can hear dripping water.
+  Exits: east south north
+> go north
+North Dead End:
+  A dead end. But wait — you spot a heavy chest against the wall!
+  Exits: south
+  Items: chest
+> examine chest
+chest: A heavy wooden chest. It looks like it might contain something useful. (Weight: 8.0 lbs)
+  The chest contains:
+    - rusty key
+> unpack rusty key
+UNPACK is not implemented yet!
+> take rusty key
+There is no such item here.
+> go south
+North Corridor:
+  A long dark corridor stretches before you. You can hear dripping water.
+  Exits: east south north
+> go south
+Maze Entrance:
+  You wake up at the entrance of a dark maze. The air is cold and damp. Paths lead north and east.
+  Exits: east north
+  Items: stone
+> go north
+North Corridor:
+  A long dark corridor stretches before you. You can hear dripping water.
+  Exits: east south north
+> go down
+There is no door!
+> go north
+North Dead End:
+  A dead end. But wait — you spot a heavy chest against the wall!
+  Exits: south
+  Items: chest
+> examine chest
+chest: A heavy wooden chest. It looks like it might contain something useful. (Weight: 8.0 lbs)
+  The chest contains:
+    - rusty key
+> go south
+North Corridor:
+  A long dark corridor stretches before you. You can hear dripping water.
+  Exits: east south north
+> go east
+Central Chamber:
+  A large open chamber. Tunnels branch off in every direction. This must be the heart of the maze.
+  Exits: east south north west down
+> go down
+South Tunnel:
+  A downward sloping tunnel. It smells like mud. Another trap waits here.
+  Exits: south up
+  Items: backpack
+> take backpack
+You picked up the backpack.
+> examine backpack
+backpack: A sturdy backpack. Useful for carrying items. (Weight: 3.0 lbs)
+  The backpack contains:
+    - torch
+> unpack torch
+UNPACK is not implemented yet!
+> go south
+Deep Chamber:
+  The deepest part of the maze. A compass and rope sit in the corner. You're close to the exit.
+  Exits: east north
+  Items: compass rope
+> take compass
+You picked up the compass.
+> take rope
+You picked up the rope.
+> go east
+Exit Tunnel:
+  You can see faint light ahead! Your friends are calling your name. The exit is near!
+  Exits: west
+You see light ahead and hear your friends calling!
+You have escaped the maze!
+> help
+Fred is lost in a dark maze.
+Find his gear and escape to his friends!
+
+Your command words are:
+   go quit help look score turns back status
+   take drop examine inventory
+   lock unlock pack unpack
+> status
+You have taken 22 turns.
+Your current score is: 40
+Exit Tunnel:
+  You can see faint light ahead! Your friends are calling your name. The exit is near!
+  Exits: west

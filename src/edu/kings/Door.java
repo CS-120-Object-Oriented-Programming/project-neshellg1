@@ -20,7 +20,10 @@ public class Door {
 	private Room destination;
 	/** Whether this door is locked. */
 	private boolean locked;
-
+	/** The name of the item required to unlock this door. Null if no key needed. */
+    private String requiredKey;
+    
+    
 	/**
 	 * Constructor for the Door class.
 	 * @param destination The room this door leads to
@@ -28,6 +31,7 @@ public class Door {
 	public Door(Room destination) {
 		this.destination = destination;
 		this.locked = false;
+		this.requiredKey = null;
 	}
 
 	/**
@@ -53,4 +57,23 @@ public class Door {
 	public void setLocked(boolean locked) {
 		this.locked = locked;
 	}
+	
+	/**
+     * Returns the name of the item required to unlock this door.
+     *
+     * @return The key item name, or null if no key is required.
+     */
+    public String getRequiredKey() {
+        return requiredKey;
+    }
+ 
+    /**
+     * Sets the key required to unlock this door and locks it.
+     *
+     * @param keyName The name of the item that unlocks this door.
+     */
+    public void setRequiredKey(String keyName) {
+        this.requiredKey = keyName;
+        this.locked = true;
+    }
 }

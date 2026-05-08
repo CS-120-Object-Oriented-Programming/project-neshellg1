@@ -26,7 +26,7 @@ public class Game {
     /** The number of turns the player has taken. */
     private int turns;
     /** The player's current score. */
-    private int score;
+    //private int score;
     
     
 	/**
@@ -37,7 +37,7 @@ public class Game {
 		player  = new Player (world.getRoom("maze entrance"));
 		previousRoom = null;
 		turns = 0;
-		score = 0;
+		//score = 0;
 	}
 	
 	/**
@@ -101,6 +101,18 @@ public class Game {
             case STATUS:
                 status();
                 break;
+            case TAKE:
+                takeItem(command);
+                break;
+            case DROP:
+                dropItem(command);
+                break;
+            case EXAMINE:
+                examineItem(command);
+                break;
+            case INVENTORY:
+                printInventory();
+                break;
             default:
                 Writer.println(commandWord + " is not implemented yet!");
                 break;
@@ -126,6 +138,48 @@ public class Game {
         }
     }
 
+    /**
+     * Drops an item from the player's inventory into the current room.
+     *
+     * @param command The command to be processed.
+     */
+    private void dropItem(Command command) {
+        if (!command.hasSecondWord()) {
+            Writer.println("Drop which item?");
+        } else {
+            String itemName = command.getRestOfLine();
+            Item item = player.removeItem(itemName);
+            if (item == null) {
+                Writer.println("You don't have that item.");
+            } else {
+                player.getCurrentRoom().addItem(item);
+                Writer.println("You dropped the " + item.getName() + ".");
+            }
+        }
+    }
+    
+    /**
+     * Examines an item in the room or in the player's inventory.
+     *
+     * @param command The command to be processed.
+     */
+    private void examineItem(Command command) {
+        if (!command.hasSecondWord()) {
+            Writer.println("Examine which item?");
+        } else {
+            String itemName = command.getRestOfLine();
+            Item item = player.getItem(itemName);
+            if (item == null) {
+                item = player.getCurrentRoom().getItem(itemName);
+            }
+            if (item == null) {
+                Writer.println("There is no such item.");
+            } else {
+                Writer.println(item.toString());
+            }
+        }
+    }
+    
 	/**
 	 * Try to go to one direction. If there is an exit, enter the new room,
 	 * otherwise print an error message.
@@ -135,7 +189,6 @@ public class Game {
 	 */
 	private void goRoom(Command command) {
 		if (!command.hasSecondWord()) {
-			// if there is no second word, we don't know where to go...
 			Writer.println("Go where?");
 		} else {
 			String direction = command.getRestOfLine();
@@ -161,12 +214,91 @@ public class Game {
 			}
 		}
 	}
+	
+	/**
+     * Locks a door in the specified direction using an item from inventory.
+     *
+     * @param command The command to be processed.
+     */
+    private void lockDoor(Command command) {
+        if (!command.hasSecondWord()) {
+            Writer.println("Lock which direction?");
+        } else {
+            String direction = command.getRestOfLine();
+            Door door = player.getCurrentRoom().getExit(direction);
+            if (door == null) {
+                Writer.println("There is no door in that direction.");
+            } else if (door.isLocked()) {
+                Writer.println("That door is already locked.");
+            } else if (door.getRequiredKey() == null) {
+                Writer.println("That door cannot be locked.");
+            } else {
+                String keyName = door.getRequiredKey();
+                Item key = player.getItem(keyName);
+                if (key == null) {
+                    Writer.println("You need the " + keyName + " to lock that door.");
+                } else {
+                    door.setLocked(true);
+                    Writer.println("You locked the door to the " + direction + ".");
+                }
+            }
+        }
+    }
+    
 	/**
      * Prints out the location information.
      */
     private void look() {
         printLocationInformation();
     }
+    
+    /**
+     * Packs an item from the room or inventory into a container in the inventory.
+     * Uses multistep command — prompts for which container and which item.
+     *
+     * @param command The command to be processed.
+     */
+    private void packItem(Command command) {
+        if (!command.hasSecondWord()) {
+            Writer.println("Pack which item?");
+        } else {
+            String itemName = command.getRestOfLine();
+ 
+            // Find the item in the room or inventory
+            Item item = player.getCurrentRoom().getItem(itemName);
+            boolean fromRoom = item != null;
+            if (item == null) {
+                item = player.getItem(itemName);
+            }
+            if (item == null) {
+                Writer.println("There is no such item.");
+                return;
+            }
+            if (item instanceof Container) {
+                Writer.println("You can't pack a container into itself.");
+                return;
+            }
+            
+            // Ask which container
+            Writer.print("Into which container? ");
+            String containerName = Reader.getResponse();
+            Item containerItem = player.getItem(containerName);
+            if (!(containerItem instanceof Container)) {
+                Writer.println("You don't have a container called " + containerName + ".");
+                return;
+            }
+ 
+            Container container = (Container) containerItem;
+            if (fromRoom) {
+                player.getCurrentRoom().removeItem(itemName);
+            } else {
+                player.removeItem(itemName);
+            }
+            container.addItem(item);
+            Writer.println("You packed the " + item.getName() + " into the " + container.getName() + ".");
+        }
+    }
+            
 	/**
 	 * Print out the closing message for the player.
 	 */
@@ -185,8 +317,16 @@ public class Game {
         Writer.println();
         Writer.println("Your command words are:");
         Writer.println("   go quit help look score turns back status");
-
+        Writer.println("   take drop examine inventory");
+        Writer.println("   lock unlock pack unpack");
 	}
+	
+	/**
+     * Prints the player's current inventory.
+     */
+    private void printInventory() {
+        Writer.println(player.getInventoryString());
+    }
 	
 	/**
      * Prints out the current location information.
@@ -243,4 +383,97 @@ public class Game {
 	        printScore();
 	        printLocationInformation();
 	    }
-}
+		   /**
+	     * Takes an item from the current room and adds it to the player's inventory.
+	     *
+	     * @param command The command to be processed.
+	     */
+	    private void takeItem(Command command) {
+	        if (!command.hasSecondWord()) {
+	            Writer.println("Take what?");
+	        } else {
+	            String itemName = command.getRestOfLine();
+	            Item item = player.getCurrentRoom().getItem(itemName);
+	            if (item == null) {
+	                Writer.println("There is no such item here.");
+	            } else {
+	                boolean taken = player.addItem(item);
+	                if (!taken) {
+	                    if (item.getWeight() > 20.0) {
+	                        Writer.println("That item is too heavy to lift!");
+	                    } else {
+	                        Writer.println("You are carrying too much to pick that up.");
+	                    }
+	                } else {
+	                    player.getCurrentRoom().removeItem(itemName);
+	                    player.addScore(item.getPoints());
+	                    Writer.println("You picked up the " + item.getName() + ".");
+	                }
+	            }
+	        }
+	    }
+	        /**
+	         * Unlocks a door in the specified direction using an item from inventory.
+	         * Uses multistep command — prompts for which key to use.
+	         *
+	         * @param command The command to be processed.
+	         */
+	        private void unlockDoor(Command command) {
+	            if (!command.hasSecondWord()) {
+	                Writer.println("Unlock which direction?");
+	            } else {
+	                String direction = command.getRestOfLine();
+	                Door door = player.getCurrentRoom().getExit(direction);
+	                if (door == null) {
+	                    Writer.println("There is no door in that direction.");
+	                } else if (!door.isLocked()) {
+	                    Writer.println("That door is not locked.");
+	                } else {
+	                    Writer.print("With what? ");
+	                    String keyName = Reader.getResponse();
+	                    Item key = player.getItem(keyName);
+	                    if (key == null) {
+	                        Writer.println("You don't have that item.");
+	                    } else if (!keyName.equalsIgnoreCase(door.getRequiredKey())) {
+	                        Writer.println("That doesn't seem to unlock this door.");
+	                    } else {
+	                        door.setLocked(false);
+	                        Writer.println("You unlocked the door to the " + direction + ".");
+	                    }
+	                }
+	            }
+	        }
+	     
+	        /**
+	         * Unpacks an item from a container in the player's inventory.
+	         * Uses multistep command — prompts for which container to unpack from.
+	         *
+	         * @param command The command to be processed.
+	         */
+	        private void unpackItem(Command command) {
+	            if (!command.hasSecondWord()) {
+	                Writer.println("Unpack which item?");
+	            } else {
+	                String itemName = command.getRestOfLine();
+	     
+	                // Ask which container
+	                Writer.print("From which container? ");
+	                String containerName = Reader.getResponse();
+	                Item containerItem = player.getItem(containerName);
+	                if (!(containerItem instanceof Container)) {
+	                    Writer.println("You don't have a container called " + containerName + ".");
+	                    return;
+	                }
+	     
+	                Container container = (Container) containerItem;
+	                Item item = container.removeItem(itemName);
+	                if (item == null) {
+	                    Writer.println("There is no " + itemName + " in the " + container.getName() + ".");
+	                } else {
+	                    player.getCurrentRoom().addItem(item);
+	                    Writer.println("You unpacked the " + item.getName() + " from the "
+	                        + container.getName() + " and left it in the room.");
+	                }
+	            }
+	        }
+	    }
